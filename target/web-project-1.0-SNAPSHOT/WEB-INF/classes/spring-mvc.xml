@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <mvc:annotation-driven/>
+
+    <context:component-scan base-package="lanway" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
+    </context:component-scan>
+
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <!--负责读取二进制格式的数据和写出二进制格式的数据-->
+                <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+                <!--负责读取字符串格式的数据和写出字符串格式的数据-->
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                    <constructor-arg value="UTF-8" />
+                </bean>
+                <!--负责读取form提交的数据（能读取的数据格式为 application/x-www-form-urlencoded，
+                不能读取multipart/form-data格式数据）；负责写入application/x-www-from-urlencoded
+                和multipart/form-data格式的数据；-->
+                <bean class="org.springframework.http.converter.FormHttpMessageConverter" />
+                <!--负责读取和写入xml的数据-->
+                <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
+                <!--负责读取和写入json格式的数据-->
+                <ref bean="mappingJackson2HttpMessageConverter"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="mappingJackson2HttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+        <property name="prettyPrint" value="true"/>
+        <property name="supportedMediaTypes">
+            <list>
+                <value>application/json;charset=UTF-8</value>
+                <value>text/html;charset=UTF-8</value>
+            </list>
+        </property>
+    </bean>
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="lanway.common.util.TokenInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+</beans>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="lanway.test.dao.CountryMapper">
+  <resultMap id="CountryMap" type="lanway.test.entity.Country">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="ID" jdbcType="DECIMAL" property="id" />
+    <result column="COUNTRYNAME" jdbcType="VARCHAR" property="countryname" />
+    <result column="COUNTRYCODE" jdbcType="VARCHAR" property="countrycode" />
+  </resultMap>
+
+  <select id="selectByPage" parameterType="Country" resultMap="CountryMap">
+      select
+       ID,
+       COUNTRYNAME,
+       COUNTRYCODE
+      from country
+       <where>
+         <if test="id !=null and id !=''">
+            and id > #{id}
+         </if>
+         <if test="countryname !=null and countryname !=''">
+            and countryname = #{countryname}
+         </if><if test="countrycode !=null and countrycode !=''">
+           and countrycode = #{countrycode}
+         </if>
+       </where>
+  </select>
+</mapper>
